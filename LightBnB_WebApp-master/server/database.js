@@ -51,7 +51,7 @@ const addUser = function(user) {
   
   return pool.query(`
   INSERT INTO users (name, email, password)
-  VALUES ('$1', '$2', '$3')
+  VALUES ($1, $2, $3)
   RETURNING *;`, [userName, userEmail, userPassword])
   .then (res => res.rows[0])
   .catch (error => console.error('error', error.stack));
