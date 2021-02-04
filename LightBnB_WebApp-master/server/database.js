@@ -1,6 +1,6 @@
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
-const { Pool } = require('pg')
+const { Pool } = require('pg');
 
 const pool = new Pool({
   user: 'vagrant',
@@ -9,7 +9,7 @@ const pool = new Pool({
   database: 'lighthousebnb',
 });
 
-pool.connect()
+pool.connect();
 
 
 /// Users
@@ -21,8 +21,8 @@ pool.connect()
  */
 const getUserWithEmail = function(email) {
   return pool.query(`SELECT * FROM users WHERE email = $1;`, [email])
-  .then(data => data.rows[0])
-  .catch(error => console.error('error', error.stack))
+    .then(data => data.rows[0])
+    .catch(error => console.error('error', error.stack));
 };
 exports.getUserWithEmail = getUserWithEmail;
 
@@ -33,8 +33,8 @@ exports.getUserWithEmail = getUserWithEmail;
  */
 const getUserWithId = function(id) {
   return pool.query(`SELECT * FROM users WHERE id = $1;`, [id])
-  .then(data => data.rows[0])
-  .catch(error => console.error('error', error.stack))
+    .then(data => data.rows[0])
+    .catch(error => console.error('error', error.stack));
 };
 exports.getUserWithId = getUserWithId;
 
@@ -53,9 +53,9 @@ const addUser = function(user) {
   INSERT INTO users (name, email, password)
   VALUES ($1, $2, $3)
   RETURNING *;`, [userName, userEmail, userPassword])
-  .then (res => res.rows[0])
-  .catch (error => console.error('error', error.stack));
-}
+    .then(res => res.rows[0])
+    .catch(error => console.error('error', error.stack));
+};
 exports.addUser = addUser;
 
 /// Reservations
@@ -76,12 +76,12 @@ const getAllReservations = function(guest_id, limit = 10) {
   AND reservations.end_date < now()::date
   GROUP BY properties.id, reservations.id
   ORDER BY reservations.start_date
-  LIMIT $2;`, 
-  [guest_id, limit]) 
-  .then (res => res.rows)
-  .catch (error => console.error('error', error.stack));
+  LIMIT $2;`,
+  [guest_id, limit])
+    .then(res => res.rows)
+    .catch(error => console.error('error', error.stack));
 
-}
+};
 exports.getAllReservations = getAllReservations;
 
 /// Properties
@@ -114,7 +114,7 @@ const getAllProperties = function(options, limit = 10) {
 
   if (options.minimum_price_per_night && options.maximum_price_per_night) {
     queryParams.push(options.minimum_price_per_night * 100, options.maximum_price_per_night * 100);
-    queryString += `AND cost_per_night >= $${queryParams.length - 1} AND cost_per_night <= $${queryParams.length} `
+    queryString += `AND cost_per_night >= $${queryParams.length - 1} AND cost_per_night <= $${queryParams.length} `;
   }
 
   queryString += `GROUP BY properties.id `;
@@ -133,9 +133,9 @@ const getAllProperties = function(options, limit = 10) {
   console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
-  .then(res => res.rows)
-  .catch(error => console.error('error', error.stack));
-}
+    .then(res => res.rows)
+    .catch(error => console.error('error', error.stack));
+};
 exports.getAllProperties = getAllProperties;
 
 
@@ -161,18 +161,18 @@ const addProperty = function(property) {
   const propProvince = property.province;
   const propPostal = property.post_code;
 
-  queryString = `
+  const queryString = `
   INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-  RETURNING *;`
+  RETURNING *;`;
 
-  formValues = [propOwner, propTitle , propDesc , propThumbnail , propCover , propCost, propParking , propBathrooms , propBedrooms , propCountry, propStreet, propCity , propProvince, propPostal]
+  const formValues = [propOwner, propTitle , propDesc , propThumbnail , propCover , propCost, propParking , propBathrooms , propBedrooms , propCountry, propStreet, propCity , propProvince, propPostal];
 
   console.log(queryString, formValues);
 
   return pool.query(queryString, formValues)
-  .then(res => res.rows[0])
-  .catch(error => console.error('error', error.stack));
+    .then(res => res.rows[0])
+    .catch(error => console.error('error', error.stack));
 
-}
+};
 exports.addProperty = addProperty;
