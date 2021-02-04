@@ -6,11 +6,20 @@
 -- Only show listings that have a rating >= 4 stars.
 -- To build this incrementally, you can start by getting all properties without the average rating first.
 
-SELECT properties.id, title, cost_per_night, AVG(property_reviews.rating) AS "average_rating"
+-- SELECT properties.id, title, cost_per_night, AVG(property_reviews.rating) AS "average_rating"
+-- FROM properties
+-- JOIN property_reviews ON properties.id = property_id
+-- WHERE city LIKE '%Vancouver%'
+-- GROUP BY properties.id
+-- HAVING avg(property_reviews.rating) >= 4
+-- ORDER BY cost_per_night 
+-- LIMIT 10;
+
+SELECT properties.*, avg(property_reviews.rating) as average_rating
 FROM properties
 JOIN property_reviews ON properties.id = property_id
-WHERE city LIKE '%Vancouver%'
+WHERE city LIKE '%ancouv%'
 GROUP BY properties.id
 HAVING avg(property_reviews.rating) >= 4
-ORDER BY cost_per_night 
+ORDER BY cost_per_night
 LIMIT 10;
