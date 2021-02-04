@@ -99,7 +99,7 @@ const getAllProperties = function(options, limit = 10) {
   let queryString = `
   SELECT properties.*, avg(property_reviews.rating) as average_rating
   FROM properties
-  JOIN property_reviews ON properties.id = property_id
+  LEFT JOIN property_reviews ON properties.id = property_id
   WHERE true `;
 
   if (options.city) {
@@ -145,9 +145,34 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  
+  const propOwner = property.owner_id;
+  const propTitle = property.title;
+  const propDesc = property.description;
+  const propThumbnail = property.thumbnail_photo_url;
+  const propCover = property.cover_photo_url;
+  const propCost = property.cost_per_night;
+  const propParking = property.parking_spaces;
+  const propBathrooms = property.number_of_bathrooms;
+  const propBedrooms = property.number_of_bedrooms;
+  const propCountry = property.country;
+  const propStreet = property.street;
+  const propCity = property.city;
+  const propProvince = property.province;
+  const propPostal = property.post_code;
+
+  queryString = `
+  INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+  RETURNING *;`
+
+  formValues = [propOwner, propTitle , propDesc , propThumbnail , propCover , propCost, propParking , propBathrooms , propBedrooms , propCountry, propStreet, propCity , propProvince, propPostal]
+
+  console.log(queryString, formValues);
+
+  return pool.query(queryString, formValues)
+  .then(res => res.rows[0])
+  .catch(error => console.error('error', error.stack));
+
 }
 exports.addProperty = addProperty;
